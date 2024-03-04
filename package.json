@@ -1,0 +1,10 @@
+{
+  "name": "poggers",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ts-node poggers-server/server.ts && cd poggers-frontend ; npx next dev"
+  },
+  "devDependencies": {
+    "dbmate": "^2.12.0"
+  }
+}
