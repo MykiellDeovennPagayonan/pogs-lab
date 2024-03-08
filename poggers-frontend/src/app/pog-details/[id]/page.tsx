@@ -1,3 +1,11 @@
 export default function PogDetails({ params }: { params: { id: number } }) {
-  return <div className="bg-gray-900">My Post: {params.id}</div>
+  const id = Number(params.id)
+  if (isNaN(id)) return (<div className="bg-gray-900">not a num</div>)
+
+  if (id === 0) return (<div className="bg-gray-900">show all!!!!</div>)
+
+  return (
+    <div className="bg-gray-900">Pog ID: {id}</div>
+  )
+
 }

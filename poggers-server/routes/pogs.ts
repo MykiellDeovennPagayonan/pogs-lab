@@ -1,13 +1,15 @@
 import express from "express";
-const router = express.Router();
 import { Response, Request } from "express";
 import { pool } from "../server";
 
+const router = express.Router();
+
 router
-  .get("/test", async (req: Request, res: Response) => {
-    const client = await pool.connect();
-    res.json({ message: "success" })
-    client.release()
+  .get("/", async (req: Request, res: Response) => {
+    // const client = await pool.connect();
+    // res.json({ message: "success" })
+    // client.release()
+    res.status(200).json({message: 'hello world'});
   })
 
-module.exports = router;
+export default router;

@@ -13,35 +13,76 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
+  const { toast } = useToast();
+
   const [name, setName] = useState<string>('');
   const [tickerSymbol, setTickerSymbol] = useState<string>('');
-  const [price, setPrice] = useState<number>(0);
+  const [price, setPrice] = useState<number>(NaN);
   const [color, setColor] = useState<string>('red');
+  const [pogID, setPogID] = useState<number>(NaN);
 
   const handleCreatePogger = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log({ name, tickerSymbol, price, color });
 
-    // insert the await api POST request
-    //then make it return the id of the created pogger
-    // once created, router.push(/pogger-detail/:id)
+    // if (
+    //   isNaN(price) ||
+    //   name.trim().length <= 2 ||
+    //   tickerSymbol.trim().length <= 2
+    // ) {
+    //   return toast({
+    //     variant: "destructive",
+    //     title: "Failed to create a pog",
+    //     description: "Make sure that name and ticker symbols have at least 3 characters, and the price is a number!",
+    //   });
+    // }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/pogs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            tickerSymbol,
+            price,
+            color
+          }),
+        },
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+
+        console.log(result, 'sjaj');
+        console.log(response.status, 'status')
+        // setTimeout(() => router.push("/admin"), 2000);
+      } else {
+        console.error("HTTP error:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
   };
 
   return (
-    <main className="bg-gray-900 flex flex-col gap-6 min-w-96">
+    <main className="bg-gray-900 flex flex-col gap-8 min-w-96">
       <h1 className="text-3xl font-bold m-auto">Pog Time!</h1>
       <div className="grid grid-cols-1 gap-6 justify-items-center w-96 min-w-44 m-auto">
         <Dialog>
@@ -49,6 +90,11 @@ export default function Home() {
             <Button
               variant="default"
               className="w-full"
+              onClick={() => {
+                setName('');
+                setTickerSymbol('');
+                setPrice(NaN);
+              }}
             >
               <h1 className="text-lg"> Create New Pogger </h1>
             </Button>
@@ -117,7 +163,16 @@ export default function Home() {
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="submit">Create</Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      isNaN(price) ||
+                      name.trim().length <= 2 ||
+                      tickerSymbol.trim().length <= 2
+                    }
+                  >
+                    Create
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </form>
@@ -127,18 +182,31 @@ export default function Home() {
         <Button
           variant="default"
           className="w-full"
-          onClick={() => router.push("/pog-details/all")}
+          onClick={() => router.push("/pog-details/0")}
         >
           <h1 className="text-lg"> View All Poggers </h1>
         </Button>
 
-        <Button
-          variant="default"
-          className="w-full"
-          onClick={() => router.push(`/pog-details/${2}`)}
-        >
-          <h1 className="text-lg"> View a Pogger </h1>
-        </Button>
+        <div className="w-full flex flex-row gap-2">
+          <div className="basis-3/4 grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="pog-id" className="text-right">
+              Pog ID
+            </Label>
+            <Input
+              id="pog-id"
+              className="col-span-3"
+              onChange={(e) => setPogID(Number(e.target.value))}
+            />
+          </div>
+          <Button
+            variant="default"
+            className="basis-1/4"
+            onClick={() => router.push(`/pog-details/${pogID}`)}
+            disabled={isNaN(pogID) || pogID === 0}
+          >
+            <h1 className="text-md"> View Pogger</h1>
+          </Button>
+        </div>
       </div>
     </main>
   );

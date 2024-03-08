@@ -3,7 +3,8 @@ CREATE TABLE pogs (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     ticker_symbol VARCHAR(255) NOT NULL,
-    color VARCHAR(255) NOT NULL
+    color VARCHAR(255) NOT NULL,
+    price DECIMAL NOT NULL
 );
 
 -- migrate:down
