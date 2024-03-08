@@ -52,7 +52,7 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/pogs`,
+        `http://localhost:8080/api/pogs`,
         {
           method: "POST",
           headers: {
