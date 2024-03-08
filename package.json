@@ -2,9 +2,10 @@
   "name": "poggers",
   "version": "1.0.0",
   "scripts": {
-    "start": "ts-node poggers-server/server.ts && cd poggers-frontend ; npx next dev"
+    "start": "concurrently --kill-others \"cd poggers-frontend && npm run dev\" \"cd poggers-server && npm run dev\"",
+    "i-all": "npm i && cd poggers-frontend && npm i && cd ../poggers-server && npm i"
   },
-  "devDependencies": {
-    "dbmate": "^2.12.0"
+  "dependencies": {
+    "concurrently": "^8.2.2"
   }
 }
