@@ -47,6 +47,6 @@ This project uses Jest as a Testing Framework. To run the tests:
 
 ```bash
 cd poggers-server
-# or
+# then
 npm test
 ```

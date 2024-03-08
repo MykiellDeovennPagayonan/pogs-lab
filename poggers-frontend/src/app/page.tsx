@@ -38,20 +38,8 @@ export default function Home() {
     event.preventDefault();
     console.log({ name, tickerSymbol, price, color });
 
-    // if (
-    //   isNaN(price) ||
-    //   name.trim().length <= 2 ||
-    //   tickerSymbol.trim().length <= 2
-    // ) {
-    //   return toast({
-    //     variant: "destructive",
-    //     title: "Failed to create a pog",
-    //     description: "Make sure that name and ticker symbols have at least 3 characters, and the price is a number!",
-    //   });
-    // }
-
     try {
-      const response = await fetch(
+      const res = await fetch(
         `http://localhost:8080/api/pogs`,
         {
           method: "POST",
@@ -60,21 +48,21 @@ export default function Home() {
           },
           body: JSON.stringify({
             name,
-            tickerSymbol,
+            ticker_symbol: tickerSymbol,
             price,
             color
           }),
         },
       );
 
-      if (response.ok) {
-        const result = await response.json();
+      if (res.ok) {
+        const pogID: number = await res.json();
 
-        console.log(result, 'sjaj');
-        console.log(response.status, 'status')
-        // setTimeout(() => router.push("/admin"), 2000);
+        console.log(pogID, 'sjaj');
+        console.log(res.status, 'status');
+        router.push(`/pog-details/${pogID}`)
       } else {
-        console.error("HTTP error:", response.statusText);
+        console.error("HTTP error:", res.statusText);
       }
     } catch (error) {
       console.error("An error occurred:", error);
