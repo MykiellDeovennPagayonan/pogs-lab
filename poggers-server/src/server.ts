@@ -15,14 +15,13 @@ export const pool = new Pool({
 });
 
 async function startServer() {
-
   app
     .use(cors({
       origin: "http://localhost:3000",
       optionsSuccessStatus: 200,
     }))
     .use(express.json())
-    .use("/pogs", pogs)
+    .use("/api/pogs", pogs)
     .listen(8080, () => {
       console.log("Server has started at PORT 8080");
     });
