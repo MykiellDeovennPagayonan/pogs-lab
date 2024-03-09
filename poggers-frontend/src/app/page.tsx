@@ -11,12 +11,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -63,6 +63,12 @@ export default function Home() {
         router.push(`/pog-details/${pogID}`)
       } else {
         console.error("HTTP error:", res.statusText);
+
+        return toast({
+          variant: "destructive",
+          title: `Having trouble creating pog (Code ${res.status})`,
+          description: "Make sure name and ticker symbol are unique!",
+        });
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -126,27 +132,26 @@ export default function Home() {
                     onChange={(e) => setPrice(Number(e.target.value))}
                   />
                 </div>
-                <div className="grid grid-cols-1 items-center gap-4">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <div className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
-                        Color
-                      </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuRadioGroup value={color} onValueChange={setColor}>
-                        <DropdownMenuRadioItem value="red" className="text-red-500">Red</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="green" className="text-green-500">Green</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="blue" className="text-blue-500">Blue</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="yellow" className="text-yellow-500">Yellow</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="white" className="text-white">White</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="orange" className="text-orange-500">Orange</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="pink" className="text-pink-500">Pink</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="gray" className="text-gray-500">Gray</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="violet" className="text-violet-500">Violet</DropdownMenuRadioItem>
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">
+                    Color
+                  </Label>
+                  <Select defaultValue={color} onValueChange={setColor}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="red" className="text-red-500">Red</SelectItem>
+                      <SelectItem value="green" className="text-green-500">Green</SelectItem>
+                      <SelectItem value="blue" className="text-blue-500">Blue</SelectItem>
+                      <SelectItem value="yellow" className="text-yellow-500">Yellow</SelectItem>
+                      <SelectItem value="white" className="text-white">White</SelectItem>
+                      <SelectItem value="orange" className="text-orange-500">Orange</SelectItem>
+                      <SelectItem value="pink" className="text-pink-500">Pink</SelectItem>
+                      <SelectItem value="gray" className="text-gray-500">Gray</SelectItem>
+                      <SelectItem value="violet" className="text-violet-500">Violet</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -189,7 +194,10 @@ export default function Home() {
           <Button
             variant="default"
             className="basis-1/4"
-            onClick={() => router.push(`/pog-details/${pogID}`)}
+            onClick={() => {
+              router.refresh();
+              router.push(`/pog-details/${pogID}`);
+            }}
             disabled={isNaN(pogID) || pogID === 0}
           >
             <h1 className="text-md"> View Pogger</h1>

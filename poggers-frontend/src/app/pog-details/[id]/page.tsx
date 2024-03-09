@@ -8,7 +8,7 @@ async function getData(id: number): Promise<Pogs[]> {
   if (id !== 0) { url += `/${id}` };
 
   const res = await fetch(url, {
-    cache: 'force-cache',
+    cache: 'no-store',
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -36,9 +36,9 @@ export default async function PogDetails({ params }: { params: { id: number } })
       ) : pogs.length === 0 ? (
         <div>404 cannot find pogs.</div>
       ) : (
-        <div className="grid grid-cols-3 gap-4 mt-5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
           {pogs.map((pog, index) => (
-            < PogComponent key={index} pog={pog} />
+            <PogComponent key={index} pog={pog} />
           ))}
         </div>
       )}
