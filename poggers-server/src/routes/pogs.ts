@@ -6,14 +6,13 @@ import { Pogs } from "../../../poggers-frontend/src/lib/types"
 const router = express.Router();
 
 router
-  .get("/all", async (req: Request, res: Response) => {
+  .get("/", async (req: Request, res: Response) => {
     try {
       const client = await pool.connect();
       const { rows } = await client.query<Pogs>(`
-      SELECT * FROM pogs
-    `);
+        SELECT * FROM pogs
+      `);
       client.release();
-      console.log('hoy')
 
       return res.status(200).json(rows);
     } catch (error) {
