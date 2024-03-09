@@ -22,7 +22,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { Pogs, colorVariants } from "@/lib/types";
+import { postData } from "./actions";
 
 export default function Home() {
   const router = useRouter();
@@ -34,31 +36,25 @@ export default function Home() {
   const [color, setColor] = useState<string>('red');
   const [pogID, setPogID] = useState<number>(NaN);
 
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
   const handleCreatePogger = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log({ name, tickerSymbol, price, color });
+    const pogDetails: Pogs = {
+      name,
+      ticker_symbol: tickerSymbol,
+      price,
+      color: color as keyof typeof colorVariants
+    };
 
     try {
-      const res = await fetch(
-        `http://localhost:8080/api/pogs`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            ticker_symbol: tickerSymbol,
-            price,
-            color
-          }),
-        },
-      );
+      const res = await postData(pogDetails);
 
       if (res.ok) {
         const pogID: number = await res.json();
 
-        console.log(pogID, 'sjaj');
         console.log(res.status, 'status');
         router.push(`/pog-details/${pogID}`)
       } else {
@@ -177,7 +173,7 @@ export default function Home() {
           className="w-full"
           onClick={() => router.push("/pog-details/0")}
         >
-          <h1 className="text-lg"> View All Poggers </h1>
+          <h1 className="text-lg">View All Poggers </h1>
         </Button>
 
         <div className="w-full flex flex-row gap-2">
@@ -194,13 +190,10 @@ export default function Home() {
           <Button
             variant="default"
             className="basis-1/4"
-            onClick={() => {
-              router.refresh();
-              router.push(`/pog-details/${pogID}`);
-            }}
+            onClick={() => router.push(`/pog-details/${pogID}`)}
             disabled={isNaN(pogID) || pogID === 0}
           >
-            <h1 className="text-md"> View Pogger</h1>
+            <h1 className="text-md">View Pogger</h1>
           </Button>
         </div>
       </div>

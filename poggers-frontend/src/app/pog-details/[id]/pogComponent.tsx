@@ -1,6 +1,6 @@
 "use client";
 
-import { Pogs } from "@/lib/types";
+import { Pogs, colorVariants } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -25,24 +25,92 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { GripVertical } from "lucide-react";
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { deleteData, updateData } from "@/app/actions";
 
 export default function PogComponent({ pog }: { pog: Pogs }) {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [name, setName] = useState<string>(pog.name);
+  const [tickerSymbol, setTickerSymbol] = useState<string>(pog.ticker_symbol);
+  const [price, setPrice] = useState<number>(pog.price);
+  const [color, setColor] = useState<string>(pog.color);
 
-  const colorVariants = {
-    blue: 'bg-blue-500',
-    red: 'bg-red-500',
-    green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
-    white: 'bg-white text-black',
-    orange: 'bg-orange-500',
-    pink: 'bg-pink-500',
-    gray: 'bg-gray-500',
-    violet: 'bg-violet-500'
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleUpdatePogger = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const pogDetails: Pogs = {
+      id: pog.id,
+      name,
+      ticker_symbol: tickerSymbol,
+      price,
+      color: color as keyof typeof colorVariants
+    };
+
+    try {
+      const res = await updateData(pogDetails);
+
+      if (res.ok) {
+        await res.json();
+
+        console.log(res.status, 'status');
+        setIsEditDialogOpen(false);
+        router.push(`/pog-details/${pog.id}`);
+        router.refresh();
+      } else {
+        console.error("HTTP error:", res.statusText);
+
+        return toast({
+          variant: "destructive",
+          title: `Having trouble updating pog (Code ${res.status})`,
+          description: "Try again, making sure to enter the corrent details",
+        });
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
+  const handleDeletePogger = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const res = await deleteData(pog.id!);
+
+      if (res.ok) {
+        await res.json();
+
+        console.log(res.status, 'status');
+        setIsDeleteDialogOpen(false);
+        router.refresh();
+      } else {
+        console.error("HTTP error:", res.statusText);
+
+        return toast({
+          variant: "destructive",
+          title: `Having trouble deleting pog (Code ${res.status})`,
+          description: "Try again.",
+        });
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
   }
 
   return (
@@ -50,14 +118,12 @@ export default function PogComponent({ pog }: { pog: Pogs }) {
       <CardHeader>
         <CardTitle className="flex flex-row items-center w-full">
           <div className="basis-[90%]">{pog.name}</div>
-
           <DropdownMenu>
             <DropdownMenuTrigger>
               <GripVertical
                 className="basis-[10%]"
               />
             </DropdownMenuTrigger>
-
             <DropdownMenuContent>
               <DropdownMenuLabel>{pog.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -89,21 +155,77 @@ export default function PogComponent({ pog }: { pog: Pogs }) {
         </p>
       </CardFooter>
 
-      {/* Move the Dialog components outside of the Card */}
       {isEditDialogOpen && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent>
-            {/* Dialog content for editing */}
-            <DialogHeader>
-              <DialogTitle>Edit Pog</DialogTitle>
-            </DialogHeader>
-            <DialogDescription>
-              Edit the details of this pog.
-            </DialogDescription>
-            <DialogFooter>
-              <Button onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-              <Button>Save</Button>
-            </DialogFooter>
+            <form onSubmit={handleUpdatePogger}>
+              <DialogHeader>
+                <DialogTitle>Edit Pog</DialogTitle>
+              </DialogHeader>
+              <DialogDescription>
+                Edit the details of this pog.
+              </DialogDescription>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    className="col-span-3"
+                    defaultValue={pog.name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="ticker-symbol" className="text-right">
+                    Ticker Symbol
+                  </Label>
+                  <Input
+                    id="ticker-symbol"
+                    className="col-span-3"
+                    defaultValue={pog.ticker_symbol}
+                    onChange={(e) => setTickerSymbol(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">
+                    Price ₱
+                  </Label>
+                  <Input
+                    id="price"
+                    className="col-span-3"
+                    defaultValue={pog.price}
+                    onChange={(e) => setPrice(Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">
+                    Color
+                  </Label>
+                  <Select defaultValue={pog.color} onValueChange={setColor}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="red" className="text-red-500">Red</SelectItem>
+                      <SelectItem value="green" className="text-green-500">Green</SelectItem>
+                      <SelectItem value="blue" className="text-blue-500">Blue</SelectItem>
+                      <SelectItem value="yellow" className="text-yellow-500">Yellow</SelectItem>
+                      <SelectItem value="white" className="text-white">White</SelectItem>
+                      <SelectItem value="orange" className="text-orange-500">Orange</SelectItem>
+                      <SelectItem value="pink" className="text-pink-500">Pink</SelectItem>
+                      <SelectItem value="gray" className="text-gray-500">Gray</SelectItem>
+                      <SelectItem value="violet" className="text-violet-500">Violet</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant={"outline"} onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                <Button type="submit">Save</Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       )}
@@ -111,17 +233,18 @@ export default function PogComponent({ pog }: { pog: Pogs }) {
       {isDeleteDialogOpen && (
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent>
-            {/* Dialog content for deleting */}
-            <DialogHeader>
-              <DialogTitle>Delete Pog</DialogTitle>
-            </DialogHeader>
-            <DialogDescription>
-              Are you sure you want to delete this pog? This action cannot be undone.
-            </DialogDescription>
-            <DialogFooter>
-              <Button onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-              <Button>Delete</Button>
-            </DialogFooter>
+            <form onSubmit={handleDeletePogger}>
+              <DialogHeader>
+                <DialogTitle>Delete Pog</DialogTitle>
+              </DialogHeader>
+              <DialogDescription>
+                Are you sure you want to delete this pog? This action cannot be undone.
+              </DialogDescription>
+              <DialogFooter>
+                <Button onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+                <Button variant={"destructive"} type="submit">Delete</Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       )}

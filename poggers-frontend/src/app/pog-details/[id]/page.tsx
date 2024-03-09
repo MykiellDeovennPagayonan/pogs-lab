@@ -2,21 +2,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Pogs } from "@/lib/types";
 import PogComponent from "./pogComponent";
-
-async function getData(id: number): Promise<Pogs[]> {
-  let url = "http://localhost:8080/api/pogs";
-  if (id !== 0) { url += `/${id}` };
-
-  const res = await fetch(url, {
-    cache: 'no-store',
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-
-  return res.json();
-}
+import { getData } from "@/app/actions";
 
 export default async function PogDetails({ params }: { params: { id: number } }) {
   const id = Number(params.id);

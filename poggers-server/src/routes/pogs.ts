@@ -11,6 +11,7 @@ router
       const client = await pool.connect();
       const { rows } = await client.query<Pogs>(`
         SELECT * FROM pogs
+        ORDER BY id
       `);
       client.release();
 
@@ -62,17 +63,46 @@ router
       return res.status(422).json({ error });
     }
   })
-  .patch("/:id", async (req: Request, res: Response) => {
-    // const client = await pool.connect();
-    // res.json({ message: "success" })
-    // client.release()
-    res.status(200).json({ message: 'hello world' });
+  .put("/:id", async (req: Request, res: Response) => {
+    try {
+      const {
+        name,
+        ticker_symbol,
+        color,
+        price
+      }: Pogs = await req.body;
+      const client = await pool.connect();
+      const { rows } = await client.query<Pogs>(`
+        UPDATE pogs
+        SET
+          name = $1,
+          ticker_symbol = $2,
+          color = $3,
+          price = $4
+        WHERE id = $5
+      `, [name, ticker_symbol, color, price, req.params.id]);
+
+      client.release();
+
+      return res.status(200).json({ message: "Successfully updated!" });
+    } catch (error) {
+      return res.status(422).json({ error });
+    }
   })
   .delete("/:id", async (req: Request, res: Response) => {
-    // const client = await pool.connect();
-    // res.json({ message: "success" })
-    // client.release()
-    res.status(200).json({ message: 'hello world' });
+    try {
+      const client = await pool.connect();
+      const { rows } = await client.query<Pogs>(`
+        DELETE FROM pogs
+        WHERE id = $1
+      `, [req.params.id]);
+
+      client.release();
+
+      return res.status(200).json({ message: "Successfully deleted!" });
+    } catch (error) {
+      return res.status(404).json({ error });
+    }
   })
 
 export default router;
