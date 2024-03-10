@@ -5,7 +5,7 @@ import { Pogs } from "../../poggers-frontend/src/lib/types";
 let rows: Pogs[];
 
 describe("Pogs", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     // setup
     const client = await pool.connect();
     const res = await client.query<Pogs>(`
@@ -78,6 +78,7 @@ describe("Pogs", () => {
 
   describe("update a pog using PUT method", () => {
     it("should update the pog", async () => {
+      // i changed the price of a test pog
       const payload: Pogs = {
         name: "testing",
         ticker_symbol: "hmmhi",
@@ -94,6 +95,7 @@ describe("Pogs", () => {
 
       // assessment
       expect(res.statusCode).toBe(200);
+      expect(res.body.id).toBe(rows[0].id);
       expect(res.body.price).toBe('999999');
     });
   });
@@ -109,7 +111,7 @@ describe("Pogs", () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     // teardown
     const client2 = await pool.connect();
     await client2.query<Pogs>(`
@@ -119,7 +121,9 @@ describe("Pogs", () => {
         name = 'testing2'
     `);
     client2.release();
-
-    await pool.end();
   });
+
+  afterAll(async () => {
+    await pool.end();
+  })
 });

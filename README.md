@@ -5,41 +5,46 @@
 
 ## Install all dependencies
 
-To start, install all the dependencies in the root, client, and server directory with this script!
+To begin, install all the dependencies in the root, client, and server directory with this script!
 
 ```bash
 npm run i-all
 ```
 
-## Run both frontend and backend (Using Concurrently)
-
-Open a terminal on root directory and run:
-
-```bash
-npm start
-```
-
-This should run the dev script on both frontend and backend simultaneously.
-
 ## Setting up the local database
 
-Open a new terminal and run:
+After installing the dependencies, create a .env file inside the poggers-server folder. (folder structure should look like poggers-server/.env)
 
-```bash
-cd poggers-server
-# then
-dbmate up
-```
-
-This will load the migrations according to the DATABASE_URL from poggers-server/.env file. The URL is structured as follows:
+Inside the .env, paste the database URL which is structured as follows:
 
 ```bash
 DATABASE_URL="protocol://username:password@host:port/database_name?options"
 ```
 
-If the database is on your local machine, you can include sslmode=disable in the options.
+If the database is on your local machine, can include sslmode=disable in the options.
 
 Refer to the [official dbmate documentation](https://github.com/amacneil/dbmate#usage) for more info.
+
+After the URL has been properly set up, run these commands:
+
+```bash
+cd poggers-server
+# then
+dbmate up
+
+# if dbmate up gives an error, run this instead:
+npx dbmate up
+```
+
+## Run both frontend and backend (Using Concurrently)
+
+After installing dependencies and setting up the database, open a terminal on root directory and run:
+
+```bash
+npm start
+```
+
+This should run the dev script on both frontend and backend simultaneously using concurrently. Visit http://localhost:3000 to check it out!
 
 ## Perform the tests using Jest
 

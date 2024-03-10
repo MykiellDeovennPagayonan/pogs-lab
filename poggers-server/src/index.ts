@@ -22,5 +22,4 @@ app
  .use(express.json())
  .use("/api/pogs", pogs);
 
-// Export the app instance without starting the server
 export default app;
