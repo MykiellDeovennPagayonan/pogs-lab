@@ -53,10 +53,10 @@ export default function Home() {
       const res = await postData(pogDetails);
 
       if (res.ok) {
-        const pogID: number = await res.json();
+        const pog: Pogs[] = await res.json();
 
         console.log(res.status, 'status');
-        router.push(`/pog-details/${pogID}`)
+        router.push(`/pog-details/${pog[0].id}`)
       } else {
         console.error("HTTP error:", res.statusText);
 
