@@ -39,7 +39,7 @@ import { GripVertical } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { deleteData, updateData } from "@/app/actions";
+import { deleteData, updateData } from "@/app/pogActions";
 
 export default function PogComponent({ pog }: { pog: Pogs }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);

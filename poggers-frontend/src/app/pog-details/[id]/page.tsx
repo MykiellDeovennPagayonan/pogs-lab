@@ -2,11 +2,18 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Pogs } from "@/lib/types";
 import PogComponent from "./pogComponent";
-import { getData } from "@/app/actions";
+import { getData } from "@/app/pogActions";
+import { validateRequest } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function PogDetails({ params }: { params: { id: number } }) {
   const id = Number(params.id);
   const pogs: Pogs[] = await getData(id);
+  const { user } = await validateRequest();
+	if (!user) {
+		return redirect("/login");
+	}
+  console.log(user)
 
   return (
     <div className="bg-gray-900">

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start": "concurrently --kill-others \"cd poggers-frontend && npm run dev\" \"cd poggers-server && npm run dev\"",
-    "i-all": "npm i && cd poggers-frontend && npm i && cd ../poggers-server && npm i"
+    "i-all": "npm i && cd poggers-frontend && npm i && cd ../poggers-server && npm i",
+    "migrate-up": "cd poggers-server && npx dbmate up command --env-file \"../.env\"",
+    "migrate-down": "cd poggers-server && npx dbmate down command --env-file \"../.env\""
   },
   "dependencies": {
     "concurrently": "^8.2.2"
