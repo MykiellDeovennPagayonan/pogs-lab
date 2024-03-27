@@ -24,7 +24,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { Pogs, colorVariants } from "@/lib/types";
-import { postData } from "./actions";
+import { postData } from "./pogActions";
+import LogOut from "@/components/ui/logOut";
 
 export default function Home() {
   const router = useRouter();
@@ -73,6 +74,7 @@ export default function Home() {
 
   return (
     <main className="bg-gray-900 flex flex-col gap-8 min-w-96">
+      <LogOut />
       <h1 className="text-4xl font-bold m-auto uppercase text-red-400">Pog Time!</h1>
       <h2 className="text-base m-auto -mt-8">by the PROgrammers!</h2>
       <div className="grid grid-cols-1 gap-6 justify-items-center w-96 min-w-44 m-auto">

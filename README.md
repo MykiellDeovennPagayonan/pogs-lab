@@ -13,7 +13,7 @@ npm run i-all
 
 ## Setting up the local database
 
-After installing the dependencies, create a .env file inside the poggers-server folder. (folder structure should look like poggers-server/.env)
+After installing the dependencies, create a .env file in the root directory. (it should be on the same level as the README.md and .gitignore)
 
 Inside the .env, paste the database URL which is structured as follows:
 
@@ -21,24 +21,19 @@ Inside the .env, paste the database URL which is structured as follows:
 DATABASE_URL="protocol://username:password@host:port/database_name?options"
 ```
 
-If the database is on your local machine, can include sslmode=disable in the options.
+If the database is on your local machine, include sslmode=disable for the options.
 
 Refer to the [official dbmate documentation](https://github.com/amacneil/dbmate#usage) for more info.
 
-After the URL has been properly set up, run these commands:
+After the URL has been properly set up, run the pre-made package script for the migration:
 
 ```bash
-cd poggers-server
-# then
-dbmate up
-
-# if dbmate up gives an error, run this instead:
-npx dbmate up
+npm run migrate-up
 ```
 
 ## Run both frontend and backend (Using Concurrently)
 
-After installing dependencies and setting up the database, open a terminal on root directory and run:
+After installing dependencies and setting up the database, run this command on the root directory:
 
 ```bash
 npm start
